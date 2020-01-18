@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios'
+import { Table } from 'antd';
 
 const Chain = () => {
     const [state, setState] = useState([])
@@ -9,10 +10,12 @@ const Chain = () => {
     useEffect(() => {
         axios.get(`http://localhost:5000/chain`)
         .then(res => {
-            // console.log(res)
-            let resSender = res.data.chain.map(item => item.transactions)
+            // console.log(res.data.chain)
+            let resSender = res.data.chain.sort((a,b) => b.index-a.index)
+            console.log(resSender)
+            // .map(item => item.transactions)
             
-            resSender = resSender.slice(1)
+            // resSender = resSender.slice(1)
 
                 // console.log('sender',resSender)
             setState(resSender);
@@ -20,13 +23,32 @@ const Chain = () => {
         })
     }, [])
 
+    const columns = [
+        {
+          title: 'Sender',
+          dataIndex: 'sender',
+        },
+        {
+          title: 'Recipient',
+          dataIndex: 'recipient',
+        },
+        {
+          title: 'Amount',
+          dataIndex: 'amount',
+        },
+      ];
+    
+    const data = state.slice(2)
+    .map(item => item.transactions[0])
     
     return ( 
         <>
+        {/* {console.log(data)} */}
         <p>Transactions</p>
+        {/* <div className="container">
         {state.length > 0 &&
             // <p>{state[1][0].amount}</p>
-        state.map(item => { 
+        state.slice(2).map(item => { 
             // console.log('item',item)
             return (
                 <div>
@@ -38,6 +60,8 @@ const Chain = () => {
         }
         )
         }
+        </div> */}
+        <Table columns={columns} dataSource={data} bordered />
         </>
      );
 }
